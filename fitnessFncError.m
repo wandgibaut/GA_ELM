@@ -1,6 +1,20 @@
 function fitness = fitnessFncError(H,lambda,S,Xv,Nv,InputWeight,Sv)
 
-	OutputWeight = (pinv(H'*H+diag(lambda)))*H'*S;
+	
+	%jeito 2
+
+	L = eye(size(H,2));
+
+	for i=1:length(lambda)
+		L+= lambda(i)*eye(size(H,2));
+	end
+	
+	OutputWeight = (pinv(H'*H+L))*H'*S;
+
+	
+
+	%jeito 1
+	%OutputWeight = (pinv(H'*H+diag(lambda)))*H'*S;
 
 
             %%%%%%%%%%% Calculate the validating accuracy

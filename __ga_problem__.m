@@ -41,7 +41,18 @@ function [x fval exitflag output population scores] = __ga_problem__ (problem)
 
   NextPopulation = zeros (problem.options.PopulationSize, problem.nvars);
   while (! __ga_stop__ (problem, state)) ## fix a generation
-
+    
+    %wanderMods
+    %pop_at_generation_g(state.Generation,:,:) = state.Population;
+    pop = state.Population;
+    save(strcat('pop_at_generation_',sprintf('%d',state.Generation),'.mat'),'pop');
+    bestScores(state.Generation +1) = min(state.Score);
+    meanScores(state.Generation +1) = mean(state.Score);
+    
+    save('bestScore_evol.mat','bestScores');
+    save('meanScore_evol.mat','meanScores');
+    %endMods
+    
     ## elite
     if (private_state.ReproductionCount.elite > 0)
       [trash IndexSortedScores] = sort (state.Score);
@@ -81,13 +92,6 @@ function [x fval exitflag output population scores] = __ga_problem__ (problem)
     state.Generation++;
     state = __ga_problem_update_state_at_each_generation__ (state, problem,
                                                             private_state);
-                                                            
-    %wanderMods
-    %pop_at_generation_g(state.Generation,:,:) = state.Population;
-    pop = state.Population;
-    save(strcat('pop_at_generation_',sprintf('%d',state.Generation),'.mat'),'pop');
-    %endMods
-    
   endwhile
   
   [x fval exitflag output population scores] = \

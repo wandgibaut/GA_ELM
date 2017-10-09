@@ -81,7 +81,11 @@ for fold=1:k,
         
         %trecho de criacao do vetor lambda
 
-        lambda_0 = zeros(size(H,2),1);
+        %jeito 1
+        %lambda_0 = zeros(size(H,2),1);
+
+        %jeito 2
+        lambda_0 = zeros(5,1);
 
 
         %aqui vai o GA
@@ -90,11 +94,14 @@ for fold=1:k,
 
         FitnessFunction = @(lambda) fitnessFncError(H,lambda,S,Xv,Nv,InputWeight,Sv);
 
+
         %problem = struct ('fitnessfcn',FitnessFunction, 'nvars', numberOfVariables, 'options', options);
         problem = struct ('fitnessfcn',FitnessFunction, 'nvars', numberOfVariables, 'options', options);
 
         %[lambda_final,fval] = ga(FitnessFunction,numberOfVariables,[],[],[],[],[],[],[],options);
         [lambda_final,fval] = ga(problem);
+
+        renameMat(fold);
 
 
 
@@ -107,7 +114,21 @@ for fold=1:k,
             %OutputWeight = (pinv(H'*H+c(i)*I))*H'*S;
             
 %            OutputWeight = (pinv(H'*H+diag(lambda)))*H'*S;
-            OutputWeight = (pinv(H'*H+diag(lambda_final)))*H'*S;
+
+            %jeito 1
+%            OutputWeight = (pinv(H'*H+diag(lambda_final)))*H'*S;
+
+            %jeito 2
+
+            L = eye(size(H,2));
+
+            for i=1:length(lambda_final)
+                L+= lambda_final(i)*eye(size(H,2));
+            end
+    
+            OutputWeight = (pinv(H'*H+L))*H'*S;
+
+
 
             %%%%%%%%%%% Calculate the validating accuracy
 %            Hv = [tanh([Xv ones(Nv,1)]*InputWeight') ones(Nv,1)];
